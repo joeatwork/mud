@@ -187,18 +187,25 @@ module Demo
         end
       end
 
+      puts '  <!-- UNCOMMENT THE BELOW TO SEE THE SPOTS -->'
+      puts '  <!--'
       mud.coords.select {|pt| mud.sample(*pt)}.each do |(spot_x, spot_y)|
         rad = 0.1 * @scale
         cx = spot_x * @scale
         cy = spot_y * @scale
         puts %Q(  <circle cx="#{cx}" cy="#{cy}" r="#{rad}" fill="red" />)
       end
+      puts '  -->'
 
       puts footer
     end
   end
 end
 
-m = Demo::Mud.new(10)
-renderer = Demo::Renderer.new(20)
+detail = ARGV[0]&.to_i || 100
+
+scale = 500 / detail
+m = Demo::Mud.new(detail)
+renderer = Demo::Renderer.new(scale)
 renderer.render(m)
+
