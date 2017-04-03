@@ -43,7 +43,11 @@ module Demo
       edge = mud.size * @scale
       <<~END_HEADER
       <?xml version="1.0" standalone="no"?>
-      <svg width="#{edge}" height="#{edge}" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <svg width="#{edge}" height="#{edge}"
+           version="1.1"
+           mud:size="#{mud.size}"
+           xmlns="http://www.w3.org/2000/svg"
+           xmlns:mud="http://culturematic.net/xmlns/mud">
       END_HEADER
     end
 
@@ -193,7 +197,7 @@ module Demo
         rad = 0.1 * @scale
         cx = spot_x * @scale
         cy = spot_y * @scale
-        puts %Q(  <circle cx="#{cx}" cy="#{cy}" r="#{rad}" fill="red" />)
+        puts %Q(  <circle cx="#{cx}" cy="#{cy}" r="#{rad}" fill="red" mud:spot="#{spot_x}, #{spot_y}" />)
       end
       puts '  -->'
 
