@@ -9,30 +9,34 @@ module Mud
     def render(mud)
       puts header(mud)
 
-      mud.coords.each do |off_x, off_y|
-        region = SQUARE.map { |dx, dy| [off_x + dx, off_y + dy] }
-        next unless region.all? { |spot| mud.in_bounds(*spot) }
+      (mud.size - 1).times do |off_x|
+        (mud.size - 1).times do |off_y|
+          region = SQUARE.map { |dx, dy| [off_x + dx, off_y + dy] }
 
-        samples = region.map { |spot| mud.sample(*spot) }
-        poly = march_square(samples)
-        next if poly.empty?
+          samples = region.map { |spot| mud.sample(*spot) }
+          poly = march_square(samples)
+          next if poly.empty?
 
-        pts = poly.map do |poly_x, poly_y|
-          x = (off_x + poly_x) * @scale
-          y = (off_y + poly_y) * @scale
-          "#{x} #{y}"
+          pts = poly.map do |poly_x, poly_y|
+            x = (off_x + poly_x) * @scale
+            y = (off_y + poly_y) * @scale
+            "#{x} #{y}"
+          end
+
+          pts_expr = pts.join(', ')
+          puts %(  <polygon points="#{pts_expr}" fill="black" />)
         end
-
-        pts_expr = pts.join(', ')
-        puts %(  <polygon points="#{pts_expr}" fill="black" />)
       end
 
       puts '  <g display="none">'
-      mud.coords.select { |pt| mud.sample(*pt) }.each do |(spot_x, spot_y)|
-        rad = 0.1 * @scale
-        cx = spot_x * @scale
-        cy = spot_y * @scale
-        puts %(    <circle cx="#{cx}" cy="#{cy}" r="#{rad}" fill="red" mud:spot="#{spot_x}, #{spot_y}" />)
+      mud.size.times do |spot_x|
+        mud.size.times do |spot_y|
+          next unless mud.sample(spot_x, spot_y)
+          rad = 0.1 * @scale
+          cx = spot_x * @scale
+          cy = spot_y * @scale
+          puts %(    <circle cx="#{cx}" cy="#{cy}" r="#{rad}" fill="red" mud:spot="#{spot_x}, #{spot_y}" />)
+        end
       end
       puts '  </g>'
 
