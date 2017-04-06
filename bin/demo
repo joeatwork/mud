@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'bundler/setup'
+require 'mud'
+
+detail = ARGV[0]&.to_i || 100
+
+scale = 500 / detail
+m = Mud::Ball.new(detail)
+renderer = Mud::Renderer.new(scale)
+renderer.render(m)
