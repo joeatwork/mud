@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
-require 'set'
-
 module Mud
   class Renderer
-    def initialize(scale=1)
+    def initialize(scale = 1)
       @scale = scale
     end
 
@@ -126,17 +124,17 @@ module Mud
 
           unless poly.empty?
             pts_expr = poly.map {|x, y| "#{x * @scale} #{y * @scale}"}.join(', ')
-            puts %Q(  <polygon points="#{pts_expr}" fill="black" />)
+            puts %(  <polygon points="#{pts_expr}" fill="black" />)
           end
         end
       end
 
       puts '  <g display="none">'
-      mud.coords.select {|pt| mud.sample(*pt)}.each do |(spot_x, spot_y)|
+      mud.coords.select { |pt| mud.sample(*pt) }.each do |(spot_x, spot_y)|
         rad = 0.1 * @scale
         cx = spot_x * @scale
         cy = spot_y * @scale
-        puts %Q(    <circle cx="#{cx}" cy="#{cy}" r="#{rad}" fill="red" mud:spot="#{spot_x}, #{spot_y}" />)
+        puts %(    <circle cx="#{cx}" cy="#{cy}" r="#{rad}" fill="red" mud:spot="#{spot_x}, #{spot_y}" />)
       end
       puts '  </g>'
 
