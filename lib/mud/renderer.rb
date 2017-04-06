@@ -49,7 +49,7 @@ module Mud
     SQUARE = [[0, 0], [0, 1], [1, 1], [1, 0]].freeze
 
     def header(mud)
-      edge = mud.size * @scale
+      edge = (mud.size - 1) * @scale  # I don't understand the minus 1
       <<~END_HEADER
       <?xml version="1.0" standalone="no"?>
         <svg width="#{edge}" height="#{edge}"
