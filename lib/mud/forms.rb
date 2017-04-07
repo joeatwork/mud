@@ -48,10 +48,12 @@ module Mud
 
   # Each sample at 50% probability
   class Noise
-    def initialize(size)
+    def initialize(size, seed = nil)
+      seed ||= Random.new_seed
+
       @size = size
       sample_count = @size * @size
-      @all_samples = Random.new.bytes(1 + (sample_count >> 3)).bytes
+      @all_samples = Random.new(seed).bytes(1 + (sample_count >> 3)).bytes
     end
 
     def bounds
