@@ -11,6 +11,8 @@ noise = Mud::Noise.new(size)
 circle = Mud::Circle.new(half, half, half)
 masked = Mud::And.new(noise, circle)
 
+smoothed = Mud::Smooth.new(masked, 4, 5)
+
 scale = 500 / size
 renderer = Mud::Renderer.new(scale)
-renderer.render(masked)
+renderer.render(smoothed)
