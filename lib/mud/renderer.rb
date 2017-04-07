@@ -9,8 +9,9 @@ module Mud
     def render(mud)
       puts header(mud)
 
-      (mud.size - 1).times do |off_x|
-        (mud.size - 1).times do |off_y|
+      x_bound, y_bound = mud.bounds
+      (x_bound - 1).times do |off_x|
+        (y_bound - 1).times do |off_y|
           region = SQUARE.map { |dx, dy| [off_x + dx, off_y + dy] }
 
           samples = region.map { |spot| mud.sample(*spot) }
@@ -29,8 +30,8 @@ module Mud
       end
 
       puts '  <g display="none">'
-      mud.size.times do |spot_x|
-        mud.size.times do |spot_y|
+      x_bound.times do |spot_x|
+        y_bound.times do |spot_y|
           next unless mud.sample(spot_x, spot_y)
           rad = 0.1 * @scale
           cx = spot_x * @scale
@@ -49,12 +50,15 @@ module Mud
     SQUARE = [[0, 0], [0, 1], [1, 1], [1, 0]].freeze
 
     def header(mud)
-      edge = (mud.size - 1) * @scale  # I don't understand the minus 1
+      x_bound, y_bound = mud.bounds
+
+      # I don't understand the minus 1 below
+      width = x_bound * @scale
+      height = y_bound * @scale
       <<~END_HEADER
       <?xml version="1.0" standalone="no"?>
-        <svg width="#{edge}" height="#{edge}"
+        <svg width="#{width}" height="#{height}"
              version="1.1"
-             mud:size="#{mud.size}"
              xmlns="http://www.w3.org/2000/svg"
              xmlns:mud="http://culturematic.net/xmlns/mud">
       END_HEADER

@@ -4,9 +4,13 @@
 require 'bundler/setup'
 require 'mud'
 
-detail = ARGV[0]&.to_i || 100
+size = ARGV[0]&.to_i || 100
+half = size / 2.0
 
-scale = 500 / detail
-m = Mud::Ball.new(detail)
+noise = Mud::Noise.new(size)
+circle = Mud::Circle.new(half, half, half)
+masked = Mud::And.new(noise, circle)
+
+scale = 500 / size
 renderer = Mud::Renderer.new(scale)
-renderer.render(m)
+renderer.render(masked)
