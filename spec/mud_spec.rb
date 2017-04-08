@@ -22,4 +22,19 @@ RSpec.describe Mud do
       expect(Mud.enumerate(fn).to_a).to eq(expt)
     end
   end
+
+  describe Mud::Bag do
+    let(:bag) { Mud::Bag.new([[1,0], [0,1]]) }
+
+    it 'guesses bounds correctly' do
+      expect(bag.bounds).to eq([1,1])
+    end
+
+    it 'contains what I think it does' do
+      expect(bag.sample(0,0)).to eq(false)
+      expect(bag.sample(1,0)).to eq(true)
+      expect(bag.sample(0,1)).to eq(true)
+      expect(bag.sample(1,1)).to eq(false)
+    end
+  end
 end

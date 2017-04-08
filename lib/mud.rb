@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'set'
+
 require 'mud/version'
 require 'mud/enumerate'
 require 'mud/forms'
@@ -18,6 +20,22 @@ module Mud
 
     def sample(*pt)
       @fn.call(*pt)
+    end
+  end
+
+  class Bag
+    attr_accessor :bounds
+
+    # empty bags should provide explicit bounds
+    def initialize(samples, bounds=nil)
+      @bag = Set.new samples
+      @bounds = bounds || @bag.reduce do |maxes, pt|
+        maxes.zip(pt).map { |a_b| a_b.max }
+      end
+    end
+
+    def sample(*pt)
+      @bag.include? pt
     end
   end
 
