@@ -23,15 +23,22 @@ module Mud
     end
   end
 
+  # A pile of explicit sample points
   class Bag
     attr_accessor :bounds
 
     # empty bags should provide explicit bounds
+    # (remember, bounds are exclusive!)
     def initialize(samples, bounds=nil)
       @bag = Set.new samples
-      @bounds = bounds || @bag.reduce do |maxes, pt|
-        maxes.zip(pt).map { |a_b| a_b.max }
-      end
+      @bounds = if bounds
+                  bounds
+                else
+                  sample_bounds = @bag.reduce do |maxes, pt|
+                    maxes.zip(pt).map { |a_b| a_b.max }
+                  end
+                  sample_bounds.map { |b| b + 1 }
+                end
     end
 
     def sample(*pt)
@@ -47,7 +54,7 @@ module Mud
     end
 
     def bounds
-      @center.map { |c| (c + @radius).ceil }
+      @center.map { |c| (c + @radius).ceil + 1}
     end
 
     def sample(*pt)

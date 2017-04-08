@@ -9,8 +9,8 @@ rounds = ARGV[1]&.to_i || 5
 size = 100
 half = size / 2.0
 
-circle = Mud::NSphere.new(half, [half, half, half])
+sphere = Mud::NSphere.new(half, [half, half, half])
 
 scale = 500 / size
 renderer = Mud::Renderer::STL.new(scale)
-renderer.render(circle)
+renderer.render(sphere)
