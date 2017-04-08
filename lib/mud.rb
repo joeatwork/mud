@@ -47,7 +47,7 @@ module Mud
     end
 
     def bounds
-      @center.map { |c| c + @radius }
+      @center.map { |c| (c + @radius).ceil }
     end
 
     def sample(*pt)

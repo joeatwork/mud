@@ -11,13 +11,17 @@ module Mud::Renderer
       Mud::Mesher.mesh(mud).each do |(v1, v2, v3)|
         puts 'facet normal 0 0 0'
         puts '  outer loop'
-        puts "    vertex #{v1.join(' ')}"
-        puts "    vertex #{v2.join(' ')}"
-        puts "    vertex #{v3.join(' ')}"
+        puts "    vertex #{vertex(v1)}"
+        puts "    vertex #{vertex(v2)}"
+        puts "    vertex #{vertex(v3)}"
         puts '  endloop'
         puts 'endfacet'
       end
       puts 'endsolid MUD'
+    end
+
+    def vertex(v)
+      v.map { |x| x * @scale }.join(' ')
     end
   end
 
