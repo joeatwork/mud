@@ -26,25 +26,6 @@ module Mud::Forms
     end
   end
 
-  # all samples inside of the circle are visible
-  class Circle
-    def initialize(radius, center_x, center_y)
-      @radius = radius
-      @center_x = center_x
-      @center_y = center_y
-    end
-
-    def bounds
-      [@radius + @center_x, @radius + @center_y]
-    end
-
-    def sample(row, col)
-      dx = col - @center_x
-      dy = row - @center_y
-      dx * dx + dy * dy < @radius * @radius
-    end
-  end
-
   # smoother
   class Smooth
     def initialize(source, degree = 1, rounds = 1)

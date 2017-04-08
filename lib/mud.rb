@@ -39,6 +39,26 @@ module Mud
     end
   end
 
+  # all samples inside of the circle are visible
+  class NSphere
+    def initialize(radius, center)
+      @radius = radius
+      @center = center
+    end
+
+    def bounds
+      @center.map { |c| c + @radius }
+    end
+
+    def sample(*pt)
+      pt_distance = pt.zip(@center).sum do |x, c|
+        dx = x - c
+        dx * dx
+      end
+      pt_distance < @radius * @radius
+    end
+  end
+
   # Saves results of potentially expensive child sources
   class Memo
     attr_accessor :bounds
