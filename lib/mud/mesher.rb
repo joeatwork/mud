@@ -50,7 +50,6 @@ module Mud::Mesher
 
     def mesh(volume)
       cell_coords(volume).flat_map do |x_off, y_off, z_off|
-        puts "meshing cell #{[x_off, y_off, z_off]}"
         verts = CUBE_VERTEXES.map do |(x, y, z)|
           [x_off + x, y_off + y, z_off + z]
         end

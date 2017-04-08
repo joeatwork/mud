@@ -27,7 +27,7 @@ RSpec.describe Mud do
     let(:bag) { Mud::Bag.new([[1,0], [0,1]]) }
 
     it 'guesses bounds correctly' do
-      expect(bag.bounds).to eq([1,1])
+      expect(bag.bounds).to eq([2,2])
     end
 
     it 'contains what I think it does' do
