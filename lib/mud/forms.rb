@@ -1,50 +1,7 @@
 # frozen_string_literal: true
 
-module Mud
-
-  def self.enumerate(form)
-    Enumerator.new do |yielder|
-      max_x, max_y = form.bounds
-      max_x.times do |col|
-        max_y.times do |row|
-          yielder << [row, col, form.sample(row, col)]
-        end
-      end
-    end
-  end
-
-  # Allow callers to just use some arbitrary block for samples
-  class Fn
-    attr_accessor :bounds
-
-    def initialize(bounds, &block)
-      @fn = block
-      @bounds = bounds
-    end
-
-    def sample(row, col)
-      @fn.call(row, col)
-    end
-  end
-
-  # Saves results of potentially expensive forms
-  class Memo
-    attr_accessor :bounds
-
-    def initialize(source)
-      @bounds = source.bounds
-
-      memo_enum = Mud.enumerate(source).map do |(row, col, sample)|
-        [[row, col], sample]
-      end
-
-      @memo = memo_enum.to_h
-    end
-
-    def sample(*pt)
-      @memo[pt]
-    end
-  end
+# Two-dimensional bodies of samples
+module Mud::Forms
 
   # Each sample at 50% probability
   class Noise
@@ -92,7 +49,7 @@ module Mud
   class Smooth
     def initialize(source, degree = 1, rounds = 1)
       @source = if rounds > 1
-                  Memo.new(Smooth.new(source, degree, rounds - 1))
+                  Mud::Memo.new(Smooth.new(source, degree, rounds - 1))
                 else
                   source
                 end
@@ -124,24 +81,6 @@ module Mud
       else
         !raw
       end
-    end
-  end
-
-  # operation on two forms
-  class And
-    def initialize(a, b)
-      @a = a
-      @b = b
-    end
-
-    def bounds
-      ax, ay = @a.bounds
-      bx, by = @b.bounds
-      [[ax, bx].max, [ay, by].max]
-    end
-
-    def sample(row, col)
-      @a.sample(row, col) && @b.sample(row, col)
     end
   end
 end

@@ -2,24 +2,7 @@
 
 require 'spec_helper'
 
-describe Mud::Fn do
-  let(:fn) do
-    Mud::Fn.new([2, 2]) do |row, col|
-      row == col
-    end
-  end
-
-  it 'passes bounds' do
-    expect(fn.bounds).to eq([2, 2])
-  end
-
-  it 'calls block' do
-    expt = [[0, 0, true], [1, 0, false], [0, 1, false], [1, 1, true]]
-    expect(Mud.enumerate(fn).to_a).to eq(expt)
-  end
-end
-
-describe Mud::Smooth do
+describe Mud::Forms::Smooth do
   let(:center) do
     Mud::Fn.new([3, 3]) do |row, col|
       row == 1 && col == 1
@@ -27,7 +10,7 @@ describe Mud::Smooth do
   end
 
   let(:smooth_center) do
-    Mud.enumerate(Mud::Smooth.new(center)).to_a
+    Mud.enumerate(Mud::Forms::Smooth.new(center)).to_a
   end
 
   let(:left) do
@@ -37,15 +20,15 @@ describe Mud::Smooth do
   end
 
   let(:smooth_left) do
-    Mud.enumerate(Mud::Smooth.new(left)).to_a
+    Mud.enumerate(Mud::Forms::Smooth.new(left)).to_a
   end
 
   let(:smooth_left_2) do
-    Mud.enumerate(Mud::Smooth.new(left, 2)).to_a
+    Mud.enumerate(Mud::Forms::Smooth.new(left, 2)).to_a
   end
 
   let(:smooth_left_2_2) do
-    Mud.enumerate(Mud::Smooth.new(left, 2, 2)).to_a
+    Mud.enumerate(Mud::Forms::Smooth.new(left, 2, 2)).to_a
   end
 
   it 'smooths away islands' do

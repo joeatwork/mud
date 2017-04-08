@@ -9,12 +9,12 @@ rounds = ARGV[1]&.to_i || 5
 size = 100
 half = size / 2.0
 
-noise = Mud::Noise.new(size, 11503273040066674494640623225)
-circle = Mud::Circle.new(half, half, half)
+noise = Mud::Forms::Noise.new(size, 11503273040066674494640623225)
+circle = Mud::Forms::Circle.new(half, half, half)
 masked = Mud::And.new(noise, circle)
 
-smoothed = Mud::Smooth.new(masked, smooth, rounds)
+smoothed = Mud::Forms::Smooth.new(masked, smooth, rounds)
 
 scale = 500 / size
-renderer = Mud::Renderer.new(scale)
+renderer = Mud::Renderer::SVG.new(scale)
 renderer.render(smoothed)
