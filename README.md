@@ -26,7 +26,7 @@ Running 'bin/demo' will produce some sort of demo to stdout - an image or some o
 
 Here's the current demo:
 
-![a demo image probably](demo/demo.svg)
+![a demo image probably](/demo/demo.png)
 
 
 ## Contributing
