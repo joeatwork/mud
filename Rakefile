@@ -6,5 +6,5 @@ RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
 task :demo do
-  `bin/demo > demo/demo.svg`
+  `bin/demo | convert - demo/demo.png`
 end
