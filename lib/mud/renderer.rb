@@ -1,6 +1,26 @@
 # frozen_string_literal: true
 
 module Mud::Renderer
+  class STL
+    def initialize(scale = 1)
+      @scale = scale
+    end
+
+    def render(mud)
+      puts 'solid MUD'
+      Mud::Mesher.mesh(mud).each do |(v1, v2, v3)|
+        puts 'facet normal 0 0 0'
+        puts '  outer loop'
+        puts "    vertex #{v1.join(' ')}"
+        puts "    vertex #{v2.join(' ')}"
+        puts "    vertex #{v3.join(' ')}"
+        puts '  endloop'
+        puts 'endfacet'
+      end
+      puts 'endsolid MUD'
+    end
+  end
+
   class SVG
     def initialize(scale = 1)
       @scale = scale
