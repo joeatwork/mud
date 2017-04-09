@@ -28,6 +28,8 @@ module Mud::Forms
 
   # smoother
   class Smooth
+    attr_accessor :bounds
+
     def initialize(source, degree = 1, rounds = 1)
       @source = if rounds > 1
                   Mud::Memo.new(Smooth.new(source, degree, rounds - 1))
@@ -35,32 +37,48 @@ module Mud::Forms
                   source
                 end
       @degree = degree
+      @bounds = @source.bounds
+      @offsets = offsets(bounds.length)
     end
 
-    def bounds
-      @source.bounds
-    end
+    def sample(*pt)
+      raise RangeError, 'Bad sample pt arity' if pt.length != @bounds.length
 
-    def sample(row, col)
-      offsets = [[-1, -1], [0, -1], [1, -1],
-                 [-1,  0],          [1,  0],
-                 [-1,  1], [0,  1], [1,  1]]
-
-      region = offsets.map { |o_r, o_c| [row + o_r, col + o_c]}
-
-      # neighbors are in bounds
-      xmax, ymax = bounds
-      neighbors = region.select do |(r, c)|
-        c >= 0 && r >= 0 && c < xmax && r < ymax
-      end
-
-      raw = @source.sample(row, col)
-      count = neighbors.count { |x, y| @source.sample(x, y) == raw }
+      neighbors = neighborhood(pt)
+      raw = @source.sample(*pt)
+      count = neighbors.count { |spot| @source.sample(*spot) == raw }
 
       if count >= @degree
         raw
+      elsif neighbors.length <= @degree
+        # Don't smooth places where running out of form
+        # could cause artifacts
+        raw
       else
         !raw
+      end
+    end
+
+    private
+
+    def offsets(dimension)
+      return [[-1], [1]] if dimension == 1
+
+      roots = offsets(dimension - 1)
+      roots.flat_map do |root|
+        [root + [-1], root + [0], root + [1]]
+      end
+    end
+
+    def neighborhood(pt)
+      region = @offsets.map do |off|
+        off.zip(pt).map { |off_x, pt_x| off_x + pt_x }
+      end
+
+      region.select do |spot|
+        spot.zip(@bounds).all? do |spot_x, bound_x|
+          spot_x >= 0 && spot_x < bound_x
+        end
       end
     end
   end

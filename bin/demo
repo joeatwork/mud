@@ -4,7 +4,7 @@
 require 'bundler/setup'
 require 'mud'
 
-smooth = ARGV[0]&.to_i || 4
+smooth = ARGV[0]&.to_i || 9
 rounds = ARGV[1]&.to_i || 5
 size = 20
 half = size / 2.0
@@ -14,8 +14,10 @@ stack = Mud::Volumes::Layers.new(noises)
 sphere = Mud::NSphere.new(half, 3)
 moved = Mud::Arrange.new(stack, [0, 0, 0], sphere.bounds)
 masked = Mud::And.new(sphere, moved)
-orb = Mud::Memo.new(masked)
+smoothed = Mud::Forms::Smooth.new(masked, smooth, rounds)
+orb = Mud::Memo.new(smoothed)
+nudged = Mud::Arrange.new(orb, [2, 2, 2], orb.bounds.map { |b| b + 4 })
 
 scale = 500 / size
 renderer = Mud::Renderer::STL.new(scale)
-renderer.render(masked)
+renderer.render(nudged)
