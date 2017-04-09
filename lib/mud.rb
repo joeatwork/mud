@@ -49,13 +49,12 @@ module Mud
 
   # all samples inside of the circle are visible
   class NSphere
-    def initialize(radius, center)
-      @radius = radius
-      @center = center
-    end
+    attr_accessor :bounds
 
-    def bounds
-      @center.map { |c| (c + @radius).ceil + 1}
+    def initialize(radius, dimensions)
+      @radius = radius
+      @center = [@radius] * dimensions
+      @bounds = @center.map { |c| (c + @radius).ceil + 1}
     end
 
     def sample(*pt)
@@ -86,15 +85,41 @@ module Mud
     end
   end
 
+  # Position source inside of some volume. Can translate or crop
+  class Arrange
+    attr_accessor :bounds
+
+    def initialize(source, location, bounds)
+      @source = source
+      @source_bounds = source.bounds
+      @location = location
+      @bounds = bounds
+    end
+
+    def sample(*pt)
+      translated = @location.zip(pt).map { |(a, b)| a + b }
+      if translated.zip(@source_bounds).all? { |(pX, boundX)| pX < boundX }
+        @source.sample(*translated)
+      else
+        false
+      end
+    end
+  end
+
   # operation on two samples
   class And
+    attr_accessor :bounds
+
     def initialize(a, b)
       @a = a
       @b = b
-    end
+      abound = a.bounds
+      bbound = b.bounds
+      if abound != bbound
+        raise RangeError.new("Bounds #{abound} and #{bbound} must match")
+      end
 
-    def bounds
-      @a.bounds.zip(@b.bounds).map(&:max)
+      @bounds = abound.zip(bbound).map(&:max)
     end
 
     def sample(*pt)

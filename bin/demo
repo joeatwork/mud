@@ -6,11 +6,14 @@ require 'mud'
 
 smooth = ARGV[0]&.to_i || 4
 rounds = ARGV[1]&.to_i || 5
-size = 100
+size = 10
 half = size / 2.0
 
-sphere = Mud::NSphere.new(half, [half, half, half])
+noises = size.times.map { Mud::Forms::Noise.new(size) }
+stack = Mud::Volumes::Layers.new(noises)
+# sphere = Mud::Arrange.new(Mud::NSphere.new(half, 3), [0, 0], stack.bounds)
+# orb = Mud::Memo.new(Mud::And.new(stack, sphere))
 
 scale = 500 / size
 renderer = Mud::Renderer::STL.new(scale)
-renderer.render(sphere)
+renderer.render(stack)
