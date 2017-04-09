@@ -4,9 +4,9 @@
 require 'bundler/setup'
 require 'mud'
 
-smooth = ARGV[0]&.to_i || 9
-rounds = ARGV[1]&.to_i || 5
-size = 100
+smooth = ARGV[0]&.to_i || 12
+rounds = ARGV[1]&.to_i || 10
+size = 50
 half = size / 2.0
 
 # These are "Forms" - functions from some bounded set of integer coordinates

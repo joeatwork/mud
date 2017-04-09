@@ -174,10 +174,12 @@ module Mud
     def offsets(dimension)
       return [[-1], [1]] if dimension == 1
 
-      roots = offsets(dimension - 1)
-      roots.flat_map do |root|
+      roots = offsets(dimension - 1) + [[0] * (dimension - 1)]
+      area = roots.flat_map do |root|
         [root + [-1], root + [0], root + [1]]
       end
+
+      area.reject { |pt| pt.all?(&:zero?) }
     end
 
     def neighborhood(pt)

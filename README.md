@@ -28,7 +28,6 @@ Here's the current demo:
 
 ![a demo image probably](/demo/demo.png)
 
-
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/joeatwork/mud.
