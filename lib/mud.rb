@@ -73,8 +73,9 @@ module Mud
     def initialize(source)
       @bounds = source.bounds
 
-      memo_enum = Mud.enumerate(source).map do |(row, col, sample)|
-        [[row, col], sample]
+      memo_enum = Mud.enumerate(source).map do |key|
+        sample = key.pop
+        [key, sample]
       end
 
       @memo = memo_enum.to_h
@@ -94,15 +95,23 @@ module Mud
       @source_bounds = source.bounds
       @location = location
       @bounds = bounds
+
+      if location.length != bounds.length
+        raise RangeError.new('Location and bounds must have same dimension')
+      end
     end
 
     def sample(*pt)
-      translated = @location.zip(pt).map { |(a, b)| a + b }
-      if translated.zip(@source_bounds).all? { |(pX, boundX)| pX < boundX }
-        @source.sample(*translated)
-      else
-        false
+      if pt.length != @bounds.length
+        raise RangeError.new("Form in #{@bounds.length} dimensions can't sample #{pt}")
       end
+
+      translated = @location.zip(pt).map { |(a, b)| b - a }
+      in_bounds = translated.zip(@source_bounds).all? do |(p_x, bound_x)|
+        p_x < bound_x
+      end
+
+      in_bounds && @source.sample(*translated)
     end
   end
 
