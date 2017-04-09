@@ -6,15 +6,23 @@ require 'mud'
 
 smooth = ARGV[0]&.to_i || 9
 rounds = ARGV[1]&.to_i || 5
-size = 20
+size = 100
 half = size / 2.0
+
+# These are "Forms" - functions from some bounded set of integer coordinates
+# (like [1,2] or [0, 3, 4]) to true or false
+#
+# There are also some renderers - we can render stuff in 2D in SVG, or
+# in 3D into STL
+#
+# You can build some forms out of other forms
 
 noises = size.times.map { Mud::Forms::Noise.new(size) }
 stack = Mud::Volumes::Layers.new(noises)
 sphere = Mud::NSphere.new(half, 3)
 moved = Mud::Arrange.new(stack, [0, 0, 0], sphere.bounds)
 masked = Mud::And.new(sphere, moved)
-smoothed = Mud::Forms::Smooth.new(masked, smooth, rounds)
+smoothed = Mud::Smooth.new(masked, smooth, rounds)
 orb = Mud::Memo.new(smoothed)
 nudged = Mud::Arrange.new(orb, [2, 2, 2], orb.bounds.map { |b| b + 4 })
 

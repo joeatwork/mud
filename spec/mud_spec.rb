@@ -37,4 +37,39 @@ RSpec.describe Mud do
       expect(bag.sample(1,1)).to eq(false)
     end
   end
+
+  describe Mud::Smooth do
+    let(:center) do
+      Mud::Fn.new([3, 3]) do |row, col|
+        row == 1 && col == 1
+      end
+    end
+
+    let(:smooth_center) do
+      Mud.enumerate(Mud::Smooth.new(center)).to_a
+    end
+
+    let(:two) { Mud::Bag.new([[1,1], [2,1]], [4, 4]) }
+
+    let(:smooth_two) { Mud::Smooth.new(two) }
+
+    let(:smooth_two_2) { Mud::Smooth.new(two, 2) }
+
+    let(:smooth_two_2_2) { Mud::Smooth.new(two, 2, 2) }
+
+    it 'smooths away islands' do
+      expect(smooth_center.map { |pt| pt[2] }).to all(eq false)
+    end
+
+    it 'leaves elements with neighbors' do
+      expect(smooth_two.sample(1, 1)).to eq(true)
+      expect(smooth_two.sample(2, 1)).to eq(true)
+    end
+
+    it 'flips at 2 degrees' do
+      expect(smooth_two_2.sample(1, 1)).to eq(false)
+      expect(smooth_two_2.sample(2, 1)).to eq(false)
+    end
+  end
+
 end
