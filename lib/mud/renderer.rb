@@ -1,6 +1,23 @@
 # frozen_string_literal: true
 
+require 'erb'
+
 module Mud::Renderer
+  class ThreeJS
+
+    TMPLNAME = File.join(File.dirname(__FILE__), "threejs.html.erb")
+    TMPL = ERB.new(File.read(TMPLNAME))
+
+    def render(mud)
+      mesh = Mud::Mesher::mesh(mud)
+      TMPL.run(binding)
+    end
+
+    def vertex(v)
+      "[#{v.join(', ')}]"
+    end
+  end
+
   class STL
     def initialize(scale = 1)
       @scale = scale

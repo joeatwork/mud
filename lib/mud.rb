@@ -58,9 +58,10 @@ module Mud
     end
 
     def sample(*pt)
-      pt_distance = pt.zip(@center).sum do |x, c|
+      pt_distance = pt.zip(@center).reduce(0) do |s, (x, c)|
         dx = x - c
-        dx * dx
+        s += dx * dx
+        s
       end
       pt_distance < @radius * @radius
     end

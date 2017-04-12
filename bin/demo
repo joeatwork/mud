@@ -6,7 +6,7 @@ require 'mud'
 
 smooth = ARGV[0]&.to_i || 12
 rounds = ARGV[1]&.to_i || 10
-size = 50
+size = 10
 half = size / 2.0
 
 # These are "Forms" - functions from some bounded set of integer coordinates
@@ -27,5 +27,5 @@ orb = Mud::Memo.new(smoothed)
 nudged = Mud::Arrange.new(orb, [2, 2, 2], orb.bounds.map { |b| b + 4 })
 
 scale = 500 / size
-renderer = Mud::Renderer::STL.new(scale)
-renderer.render(nudged)
+renderer = Mud::Renderer::ThreeJS.new
+renderer.render(sphere)
