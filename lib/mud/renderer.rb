@@ -9,12 +9,18 @@ module Mud::Renderer
     TMPL = ERB.new(File.read(TMPLNAME))
 
     def render(mud)
-      mesh = Mud::Mesher::mesh(mud)
-      TMPL.run(binding)
-    end
+      offsets = mud.bounds.map { |x| -x / 2.0 }
+      radius_squared = offsets.reduce(0) { |s, off| s + (off * off) }
+      radius = Math.sqrt(radius_squared)
 
-    def vertex(v)
-      "[#{v.join(', ')}]"
+      mesh = Mud::Mesher::mesh(mud)
+      offset_mesh = mesh.map do |triangle|
+        triangle.map do |vertex|
+          vertex.zip(offsets).map { |x, off| x + off }
+        end
+      end
+
+      TMPL.run(binding)
     end
   end
 

@@ -4,10 +4,11 @@
   </head>
   <body>
     <script>
+     let radius = <%= radius %>;
      let triangles = [
-       <% mesh.each do |(v1, v2, v3)| %>
-       [<%= v1 %>, <%= v2 %>, <%= v3 %>],
-       <% end %>
+         <% offset_mesh.map { |(v1, v2, v3)| "[#{v1},#{v2},#{v3}]," }.each_slice(40) do |line| %>
+             <%= line.join('') %>
+         <% end %>
      ];
     </script>
     <script>
@@ -39,7 +40,7 @@
      directionalLight = new THREE.DirectionalLight();
      scene.add(directionalLight);
 
-     camera.position.z = 200;
+     camera.position.z = 4 * radius;
 
      var render = function () {
        requestAnimationFrame( render );
