@@ -6,5 +6,5 @@ RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
 task :demo do
-  `bin/demo | convert - demo/demo.png`
+  %x{bin/demo > demo/demo.$(git rev-parse HEAD).html }
 end

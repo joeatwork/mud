@@ -9,14 +9,6 @@ rounds = ARGV[1]&.to_i || 10
 size = 50
 half = size / 2.0
 
-# These are "Forms" - functions from some bounded set of integer coordinates
-# (like [1,2] or [0, 3, 4]) to true or false
-#
-# There are also some renderers - we can render stuff in 2D in SVG, or
-# in 3D into STL
-#
-# You can build some forms out of other forms
-
 noises = size.times.map { Mud::Forms::Noise.new(size) }
 stack = Mud::Volumes::Layers.new(noises)
 sphere = Mud::NSphere.new(half, 3)
@@ -26,6 +18,5 @@ smoothed = Mud::Smooth.new(masked, smooth, rounds)
 orb = Mud::Memo.new(smoothed)
 nudged = Mud::Arrange.new(orb, [2, 2, 2], orb.bounds.map { |b| b + 4 })
 
-scale = 500 / size
 renderer = Mud::Renderer::ThreeJS.new
-renderer.render(orb)
+renderer.render(nudged)

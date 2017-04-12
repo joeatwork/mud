@@ -41,13 +41,13 @@
      directionalLight = new THREE.DirectionalLight();
      scene.add(directionalLight);
 
-     camera.position.z = 4 * radius;
+     camera.position.z = 3 * radius;
 
      var render = function () {
        requestAnimationFrame( render );
 
-       mud.rotation.x += 0.01;
-       mud.rotation.y += 0.01;
+       mud.rotation.x += 0.001;
+       mud.rotation.y += 0.001;
 
        renderer.render(scene, camera);
      };
