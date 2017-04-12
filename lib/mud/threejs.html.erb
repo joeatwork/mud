@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.js"></script>
+  </head>
+  <body>
+    <script>
+     let triangles = [
+       <% mesh.each do |(v1, v2, v3)| %>
+       [<%= v1 %>, <%= v2 %>, <%= v3 %>],
+       <% end %>
+     ];
+    </script>
+    <script>
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+
+      var renderer = new THREE.WebGLRenderer();
+      renderer.setSize( window.innerWidth, window.innerHeight );
+      document.body.appendChild( renderer.domElement );
+
+      var geometry = new THREE.Geometry();
+      triangles.forEach(t => {
+        t.forEach(v => {
+          geometry.vertices.push(new THREE.Vector3(...v))
+        });
+
+        // No normal - is that ok?
+        let length = geometry.vertices.length;
+        geometry.faces.push(new THREE.Face3(length - 3, length - 2, length - 1));
+      });
+
+     var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+     var mud = new THREE.Mesh( geometry, material );
+     scene.add(mud);
+
+     camera.position.z = 20;
+
+     var render = function () {
+       requestAnimationFrame( render );
+
+       mud.rotation.x += 0.01;
+       mud.rotation.y += 0.01;
+
+       renderer.render(scene, camera);
+     };
+
+     render();
+    </script>
+</html>
