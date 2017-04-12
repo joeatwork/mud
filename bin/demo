@@ -28,4 +28,4 @@ nudged = Mud::Arrange.new(orb, [2, 2, 2], orb.bounds.map { |b| b + 4 })
 
 scale = 500 / size
 renderer = Mud::Renderer::ThreeJS.new
-renderer.render(smoothed)
+renderer.render(orb)

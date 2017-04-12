@@ -5,8 +5,9 @@
   <body>
     <script>
      let radius = <%= radius %>;
+     <% ts = offset_mesh.map { |(v1, v2, v3)| "[#{v1},#{v2},#{v3}]," }  %>
      let triangles = [
-         <% offset_mesh.map { |(v1, v2, v3)| "[#{v1},#{v2},#{v3}]," }.each_slice(40) do |line| %>
+         <% ts.each_slice(128) do |line| %>
              <%= line.join('') %>
          <% end %>
      ];
