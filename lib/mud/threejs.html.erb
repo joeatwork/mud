@@ -29,11 +29,17 @@
         geometry.faces.push(new THREE.Face3(length - 3, length - 2, length - 1));
       });
 
-     var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+     // Total cargo-cult setup of lighting and material
+     var material = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5, shininess: 0 } );
+     // var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
      var mud = new THREE.Mesh( geometry, material );
      scene.add(mud);
 
-     camera.position.z = 20;
+     scene.add( new THREE.AmbientLight( 0x444444 ) );
+     directionalLight = new THREE.DirectionalLight();
+     scene.add(directionalLight);
+
+     camera.position.z = 200;
 
      var render = function () {
        requestAnimationFrame( render );
