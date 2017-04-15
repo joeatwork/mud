@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Mud::Volumes do
   let(:layers) do
     Mud::Volumes::Layers.new([
-      Mud::Bag.new([[0, 0]], [4,2]),
-      Mud::Bag.new([[0, 1]], [2,5]),
-      Mud::Bag.new([[0, 2]], [2,2]),
+      Mud::Forms::Bag.new([[0, 0]], [4,2]),
+      Mud::Forms::Bag.new([[0, 1]], [2,5]),
+      Mud::Forms::Bag.new([[0, 2]], [2,2]),
     ])
   end
 
