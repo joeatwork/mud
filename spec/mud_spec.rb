@@ -38,7 +38,7 @@ RSpec.describe Mud do
     end
   end
 
-  describe Mud::Smooth do
+  describe 'Mud.smooth' do
     let(:center) do
       Mud::Fn.new([3, 3]) do |row, col|
         row == 1 && col == 1
@@ -46,16 +46,16 @@ RSpec.describe Mud do
     end
 
     let(:smooth_center) do
-      Mud.enumerate(Mud::Smooth.new(center)).to_a
+      Mud.enumerate(Mud.smooth(center)).to_a
     end
 
     let(:two) { Mud::Bag.new([[1,1], [2,1]], [4, 4]) }
 
-    let(:smooth_two) { Mud::Smooth.new(two) }
+    let(:smooth_two) { Mud.smooth(two) }
 
-    let(:smooth_two_2) { Mud::Smooth.new(two, 2) }
+    let(:smooth_two_2) { Mud.smooth(two, 2) }
 
-    let(:smooth_two_2_2) { Mud::Smooth.new(two, 2, 2) }
+    let(:smooth_two_2_2) { Mud.smooth(two, 2, 2) }
 
     it 'smooths away islands' do
       expect(smooth_center.map { |pt| pt[2] }).to all(eq false)

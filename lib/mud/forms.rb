@@ -1,28 +1,31 @@
 # frozen_string_literal: true
 
+require 'set'
+
+require 'mud/enumerate'
+
 # Two-dimensional bodies of samples
 module Mud::Forms
 
-  # Each sample at 50% probability
   class Noise
-    def initialize(size, seed = nil)
+    attr_accessor :bounds
+
+    def initialize(size, dimensions, probability, seed = nil)
       seed ||= Random.new_seed
+      p = [probability, 1.0 - probability].min
 
-      @size = size
-      sample_count = @size * @size
-      @all_samples = Random.new(seed).bytes(1 + (sample_count >> 3)).bytes
+      @bounds = [size] * dimensions
+      @invert = p < probability
+      @pts = Set.new
+
+      randoms = Random.new(seed)
+      Mud.enumerate_bounds(bounds).each do |pt|
+        @pts.add(pt) if randoms.rand < p
+      end
     end
 
-    def bounds
-      [@size, @size]
-    end
-
-    def sample(row, col)
-      ix = row * @size + col
-      byte = ix >> 3
-      bit_ix = ix & 7
-      bit = 1 << bit_ix
-      (@all_samples[byte] & bit).zero?
+    def sample(*pt)
+      @pts.include?(pt) ^ @invert
     end
   end
 end

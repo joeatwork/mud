@@ -7,18 +7,24 @@ module Mud
     # Enumerate over the bounds of a form or volume
     def enumerate(mud)
       bounds = mud.bounds.map { |x| x }
-      vals = enum_bounds(bounds)
+      vals = enumerate_bounds(bounds)
 
-      progress_opts = {
-        title: "#{mud.class.name} #{bounds}",
-        output: STDERR,
-      }
+      progress_opts = if bounds.reduce { |s, i| s * i } >= 10000
+                        {
+                          title: "#{mud.class.name} #{bounds}",
+                          output: STDERR,
+                        }
+                      end
+
       Parallel.map(vals, progress: progress_opts) do |v|
-        v.reverse!
         tail = mud.sample(*v)
         v << tail
         v
       end
+    end
+
+    def enumerate_bounds(bounds)
+      enum_bounds(bounds).map { |pt| pt.reverse }
     end
 
     private

@@ -137,62 +137,76 @@ module Mud
     end
   end
 
-  # smoother
-  class Smooth
+  class Filter
     attr_accessor :bounds
 
-    def initialize(source, degree = 1, rounds = 1)
-      @source = if rounds > 1
-                  Mud::Memo.new(Smooth.new(source, degree, rounds - 1))
-                else
-                  source
-                end
-      @degree = degree
-      @bounds = @source.bounds
-      @offsets = offsets(bounds.length)
+    # Block should take a region and return a boolean sample
+    def initialize(source, &block)
+      @bounds = source.bounds
+      @offsets = offsets(@bounds.length)
+      @source = Mud::Memo.new(source)
+      @fn = block
     end
 
     def sample(*pt)
-      raise RangeError, 'Bad sample pt arity' if pt.length != @bounds.length
-
-      neighbors = neighborhood(pt)
-      raw = @source.sample(*pt)
-      count = neighbors.count { |spot| @source.sample(*spot) == raw }
-
-      if count >= @degree
-        raw
-      elsif neighbors.length <= @degree
-        # Don't smooth places where running out of form
-        # could cause artifacts
-        raw
-      else
-        !raw
-      end
+      r = region(pt)
+      @fn.call(r)
     end
 
     private
 
     def offsets(dimension)
-      return [[-1], [1]] if dimension == 1
+      return [[-1], [0], [1]] if dimension == 1
 
-      roots = offsets(dimension - 1) + [[0] * (dimension - 1)]
-      area = roots.flat_map do |root|
+      roots = offsets(dimension - 1)
+      roots.flat_map do |root|
         [root + [-1], root + [0], root + [1]]
       end
-
-      area.reject { |pt| pt.all?(&:zero?) }
     end
 
-    def neighborhood(pt)
-      region = @offsets.map do |off|
-        off.zip(pt).map { |off_x, pt_x| off_x + pt_x }
-      end
-
-      region.select do |spot|
-        spot.zip(@bounds).all? do |spot_x, bound_x|
+    def region(pt)
+      mapped = @offsets.map do |off|
+        spot = off.zip(pt).map { |off_x, pt_x| off_x + pt_x }
+        inbounds = spot.zip(@bounds).all? do |spot_x, bound_x|
           spot_x >= 0 && spot_x < bound_x
         end
+
+        if inbounds
+          sampled = @source.sample(*spot)
+          [off, sampled]
+        else
+          nil
+        end
+      end
+
+      mapped.compact
+    end
+  end
+
+
+  # TODO move to Mud::Filters, move the rest to Mud::Forms
+
+  def self.smooth(source, degree = 1, rounds = 1)
+    src = if rounds == 1
+            source
+          else
+            smooth(source, degree, rounds - 1)
+          end
+
+    Filter.new(src) do |region|
+      ((center,), others) = region.partition { |(pt, _)| pt.all?(&:zero?) }
+      centerval = center.last
+      count = others.count { |_pt, val| val == centerval }
+
+      if count >= degree
+        centerval
+      elsif region.length <= degree
+        # Avoid artifacts at corners or edges of bounds
+        centerval
+      else
+        !centerval
       end
     end
   end
+
 end
