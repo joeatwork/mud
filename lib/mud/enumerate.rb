@@ -1,15 +1,23 @@
 # frozen_string_literal: true
 
+require 'parallel'
+
 module Mud
   class << self
     # Enumerate over the bounds of a form or volume
     def enumerate(mud)
       bounds = mud.bounds.map { |x| x }
-      enum_bounds(bounds).map do |vals|
-        vals.reverse!
-        tail = mud.sample(*vals)
-        vals << tail
-        vals
+      vals = enum_bounds(bounds)
+
+      progress_opts = {
+        title: "#{mud.class.name} #{bounds}",
+        output: STDERR,
+      }
+      Parallel.map(vals, progress: progress_opts) do |v|
+        v.reverse!
+        tail = mud.sample(*v)
+        v << tail
+        v
       end
     end
 
