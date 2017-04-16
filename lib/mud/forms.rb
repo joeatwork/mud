@@ -128,7 +128,7 @@ module Mud::Forms
 
       translated = @location.zip(pt).map { |(a, b)| b - a }
       in_bounds = translated.zip(@source_bounds).all? do |(p_x, bound_x)|
-        p_x < bound_x
+        p_x >= 0 && p_x < bound_x
       end
 
       in_bounds && @source.sample(*translated)
@@ -156,10 +156,29 @@ module Mud::Forms
     end
   end
 
+  class Layers
+    def initialize(ls)
+      @ls = ls.to_a
+    end
+
+    def bounds
+      ret = @ls.map(&:bounds).reduce do |b, layer|
+        b.zip(layer).map { |b_l| b_l.max }
+      end
+
+      ret << @ls.length
+      ret
+    end
+
+    def sample(*pt)
+      layer = @ls[pt.pop]
+      layer.sample(*pt)
+    end
+  end
+
   class Filter
     attr_accessor :bounds
 
-    # Block should take a region and return a boolean sample
     def initialize(source, &block)
       @bounds = source.bounds
       @offsets = offsets(@bounds.length)
@@ -169,7 +188,7 @@ module Mud::Forms
 
     def sample(*pt)
       r = region(pt)
-      @fn.call(r)
+      @fn.call(pt, r)
     end
 
     private

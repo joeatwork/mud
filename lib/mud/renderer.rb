@@ -62,6 +62,7 @@ module Mud::Renderer
           region = SQUARE.map { |dx, dy| [off_x + dx, off_y + dy] }
 
           samples = region.map { |spot| mud.sample(*spot) }
+
           poly = march_square(samples)
           next if poly.empty?
 
