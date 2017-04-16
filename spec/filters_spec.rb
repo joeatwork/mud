@@ -56,6 +56,8 @@ RSpec.describe Mud::Filters do
     end
 
     it 'contracts toward the center' do
+      puts "filtered:: #{filtered}"
+
       expect(filtered).to eq([
         [0, 0, false], [1, 0, false], [2, 0, false], [3, 0, false], [4, 0, false], [5, 0, false],
         [0, 1, false], [1, 1, false], [2, 1, false], [3, 1, false], [4, 1, false], [5, 1, false],

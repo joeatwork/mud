@@ -16,8 +16,7 @@ module Mud
                         }
                       end
 
-      vals.map do |v| # <<< REDO THIS
-#      Parallel.map(vals, progress: progress_opts) do |v|
+      Parallel.map(vals, progress: progress_opts) do |v|
         tail = mud.sample(*v)
         v << tail
         v
