@@ -5,19 +5,19 @@ require 'parallel'
 module Mud
   class << self
     # Enumerate over the bounds of a form or volume
-    def enumerate(mud)
-      bounds = mud.bounds.map { |x| x }
+    def enumerate(form)
+      bounds = form.bounds.map { |x| x }
       vals = enumerate_bounds(bounds)
 
       progress_opts = if bounds.reduce { |s, i| s * i } >= 10000
                         {
-                          title: "#{mud.class.name} #{bounds}",
+                          title: "#{form.class.name} #{bounds}",
                           output: STDERR,
                         }
                       end
 
       Parallel.map(vals, progress: progress_opts) do |v|
-        tail = mud.sample(*v)
+        tail = form.sample(*v)
         v << tail
         v
       end

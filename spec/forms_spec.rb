@@ -57,4 +57,31 @@ RSpec.describe Mud::Forms do
     end
   end
 
+  describe Mud::Forms::Islands do
+    let(:source) do
+      Mud::Forms::Bag.new([
+       [0, 0], [0, 1], [0, 2],
+       [2, 0], [2, 1], [2, 2], [2, 3], [2, 4],
+       [4, 0], [4, 1], [4, 2], [4, 3],
+      ])
+    end
+
+    let(:islands) do
+      Mud::Forms::Islands.new(source, 2)
+    end
+
+    it 'should find only the big two' do
+      [[0, 0], [0, 1], [0, 2]].each do |pt|
+        expect(islands.sample(*pt)).to eq(false)
+      end
+
+      [[2, 0], [2, 1], [2, 2], [2, 3], [2, 4]].each do |pt|
+        expect(islands.sample(*pt)).to eq(true)
+      end
+
+      [[4, 0], [4, 1], [4, 2], [4, 3]].each do |pt|
+        expect(islands.sample(*pt)).to eq(true)
+      end
+    end
+  end
 end

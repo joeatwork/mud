@@ -3,12 +3,13 @@
 require 'set'
 
 require 'mud/enumerate'
+require 'mud/util'
 
 # Two-dimensional bodies of samples
 module Mud::Forms
 
   class Noise
-    attr_accessor :bounds
+    attr_reader :bounds
 
     def initialize(size, dimensions, probability, seed = nil)
       seed ||= Random.new_seed
@@ -31,7 +32,7 @@ module Mud::Forms
 
   # Allow callers to just use some arbitrary block for samples
   class Fn
-    attr_accessor :bounds
+    attr_reader :bounds
 
     def initialize(bounds, &block)
       @fn = block
@@ -45,7 +46,7 @@ module Mud::Forms
 
   # A pile of explicit sample points
   class Bag
-    attr_accessor :bounds
+    attr_reader :bounds
 
     # empty bags should provide explicit bounds
     # (remember, bounds are exclusive!)
@@ -68,7 +69,7 @@ module Mud::Forms
 
   # all samples inside of the circle are visible
   class NSphere
-    attr_accessor :bounds
+    attr_reader :bounds
 
     def initialize(radius, dimensions)
       @radius = radius
@@ -88,7 +89,7 @@ module Mud::Forms
 
   # Saves results of potentially expensive child sources
   class Memo
-    attr_accessor :bounds
+    attr_reader :bounds
 
     def initialize(source)
       @bounds = source.bounds
@@ -108,7 +109,7 @@ module Mud::Forms
 
   # Position source inside of some volume. Can translate or crop
   class Arrange
-    attr_accessor :bounds
+    attr_reader :bounds
 
     def initialize(source, location, bounds)
       @source = source
@@ -137,7 +138,7 @@ module Mud::Forms
 
   # operation on two samples
   class And
-    attr_accessor :bounds
+    attr_reader :bounds
 
     def initialize(a, b)
       @a = a
@@ -176,12 +177,64 @@ module Mud::Forms
     end
   end
 
-  class Filter
-    attr_accessor :bounds
+  class Islands
+    attr_reader :bounds
 
+    def initialize(source, number, min_size = 1)
+      @bounds = source.bounds
+      population = Mud.enumerate(source).select(&:last).map do |lis|
+        lis.pop
+        lis
+      end
+      regions = regions(population).select { |r| r.length >= min_size }
+      regions.sort! { |a, b| b.length <=> a.length }
+      vals = regions[0...number].flatten(1)
+      @vals = Set.new(vals)
+    end
+
+    def sample(*pt)
+      @vals.include?(pt)
+    end
+
+    def regions(pop)
+      offs = Mud::Util.offsets(@bounds.length).reject { |pt| pt.all?(&:zero?) }
+      unions = pop.map { |x| [x, Mud::Util::UnionFind.new(x, nil)] }.to_h
+      unions.each do |(pt, union)|
+        root = union.root
+        offs.each do |offset|
+          neighbor = pt.zip(offset).map { |x, off_x| x + off_x }
+          n_root = unions[neighbor]&.root
+          if n_root.nil?
+            # nothing, we're out of bounds
+          elsif n_root == root
+            # nothing, we're already in union
+          elsif n_root.rank < root.rank
+            root.parent = n_root
+          else
+            n_root.parent = root
+          end
+        end
+      end
+
+      regions = {}
+      unions.each do |(pt, union)|
+        rt = union.root
+        regions[rt] ||= []
+        regions[rt] << pt
+      end
+
+      regions.values
+    end
+  end
+
+  class Filter
+    attr_reader :bounds
+
+    # Block should take two arguments - the pt, and a "region"
+    # the region is a list of offsets + [samples]
     def initialize(source, &block)
       @bounds = source.bounds
-      @offsets = offsets(@bounds.length)
+      @offsets = Mud::Util.offsets(@bounds.length)
       @source = Memo.new(source)
       @fn = block
     end
@@ -192,15 +245,6 @@ module Mud::Forms
     end
 
     private
-
-    def offsets(dimension)
-      return [[-1], [0], [1]] if dimension == 1
-
-      roots = offsets(dimension - 1)
-      roots.flat_map do |root|
-        [root + [-1], root + [0], root + [1]]
-      end
-    end
 
     def region(pt)
       mapped = @offsets.map do |off|

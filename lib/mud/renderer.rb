@@ -8,6 +8,10 @@ module Mud::Renderer
     TMPLNAME = File.join(File.dirname(__FILE__), "threejs.html.erb")
     TMPL = ERB.new(File.read(TMPLNAME))
 
+    def dimensions
+      3
+    end
+
     def render(mud)
       offsets = mud.bounds.map { |x| -x / 2.0 }
       radius_squared = offsets.reduce(0) { |s, off| s + (off * off) }
@@ -27,6 +31,10 @@ module Mud::Renderer
   class STL
     def initialize(scale = 1)
       @scale = scale
+    end
+
+    def dimensions
+      3
     end
 
     def render(mud)
@@ -51,6 +59,10 @@ module Mud::Renderer
   class SVG
     def initialize(scale = 1)
       @scale = scale
+    end
+
+    def dimensions
+      2
     end
 
     def render(mud)
