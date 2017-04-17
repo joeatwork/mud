@@ -23,18 +23,22 @@ renderer = {
 
 raise 'No Such Renderer (try "SVG")' unless renderer
 
-size = 100000
+size = 500000
 side = (size ** (1/3.0)).ceil
+min_island = (side / 5).ceil
+
+STDERR.puts "side: #{side} minimum island: #{min_island}"
+
 half = side / 2.0
 
-noises = Mud::Forms::Noise.new(side, 2, 0.6)
+noises = Mud::Forms::Noise.new(side, 2, 0.5)
 sphere = Mud::Forms::NSphere.new(half, 2)
 moved = Mud::Forms::Arrange.new(noises, [0, 0], sphere.bounds)
 base = Mud::Forms::And.new(sphere, moved)
 
 converged = Mud::Filters.converge(base)
-smoothed = Mud::Filters.smooth(converged, 2, 10)
-ready = Mud::Forms::Islands.new(smoothed, 3, 10)
+smoothed = Mud::Filters.smooth(converged, 3, 7)
+ready = Mud::Forms::Islands.new(smoothed, 3, min_island)
 
 if renderer.dimensions == 2
   renderer.render(ready)
@@ -44,8 +48,8 @@ end
 lis = [ready]
 side.times.each do
   converged = Mud::Filters.converge(lis[-1])
-  smoothed = Mud::Filters.smooth(converged, 3, 10)
-  ready = Mud::Forms::Islands.new(smoothed, 3)
+  # smoothed = Mud::Filters.smooth(converged, 3, 7)
+  ready = Mud::Forms::Islands.new(converged, 3)
   lis << ready
 end
 

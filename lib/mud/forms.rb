@@ -186,9 +186,10 @@ module Mud::Forms
         lis.pop
         lis
       end
-      regions = regions(population).select { |r| r.length >= min_size }
-      regions.sort! { |a, b| b.length <=> a.length }
-      vals = regions[0...number].flatten(1)
+      all_regions = regions(population)
+      big_regions = all_regions.select { |r| r.length >= min_size }
+      big_regions.sort! { |a, b| b.length <=> a.length }
+      vals = big_regions[0...number].flatten(1)
       @vals = Set.new(vals)
     end
 
