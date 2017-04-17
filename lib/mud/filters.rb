@@ -17,7 +17,7 @@ module Mud::Filters
             end
 
       Mud::Forms::Filter.new(src) do |_, region|
-        (center, *others) = center_etc(region)
+        (center, others) = center_etc(region)
         centerval = center.last
         count = others.count { |_pt, val| val == centerval }
 
