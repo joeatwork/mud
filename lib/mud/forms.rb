@@ -67,26 +67,6 @@ module Mud::Forms
     end
   end
 
-  # all samples inside of the circle are visible
-  class NSphere
-    attr_reader :bounds
-
-    def initialize(radius, dimensions)
-      @radius = radius
-      @center = [@radius] * dimensions
-      @bounds = @center.map { |c| (c + @radius).ceil + 1}
-    end
-
-    def sample(*pt)
-      pt_distance = pt.zip(@center).reduce(0) do |s, (x, c)|
-        dx = x - c
-        s += dx * dx
-        s
-      end
-      pt_distance < @radius * @radius
-    end
-  end
-
   # Saves results of potentially expensive child sources
   class Memo
     attr_reader :bounds
@@ -118,7 +98,10 @@ module Mud::Forms
       @bounds = bounds
 
       if location.length != bounds.length
-        raise RangeError.new('Location and bounds must have same dimension')
+        raise(
+          RangeError,
+          "Location (#{location}) and bounds (#{bounds}) must have same dimension"
+        )
       end
     end
 
