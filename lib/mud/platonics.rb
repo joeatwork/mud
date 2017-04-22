@@ -14,10 +14,12 @@ module Mud::Platonics
   class NCube
     include Continuous
     attr_reader :bounds
+    attr_reader :offset
 
     def initialize(edge, dimension)
       @edge = edge.ceil
       @bounds = [@edge] * dimension
+      @offset = [0] * dimension # TODO: center at origin?
     end
 
     def sample(*pt)
@@ -33,11 +35,13 @@ module Mud::Platonics
   class NSphere
     include Continuous
     attr_reader :bounds
+    attr_reader :offset
 
     def initialize(radius, dimensions)
       @radius = radius
       @center = [@radius] * dimensions
       @bounds = @center.map { |c| (c + @radius).ceil + 1}
+      @offset = [0] * dimensions
     end
 
     def sample(*pt)
@@ -57,6 +61,7 @@ module Mud::Platonics
   # We can only apply transforms to continuous
   class Transform
     attr_reader :bounds
+    attr_reader :offset
 
     def initialize(source, matrix)
       raise "Can only transform continuous sources" unless source.continuous
@@ -74,6 +79,8 @@ module Mud::Platonics
       @bounds = new_box.reduce([1] * old_bounds.length) do |v0, v1|
         v0.zip(v1).map { |pair| pair.max.ceil }
       end
+
+      raise "Not complete - we should infer offset from old_box"
     end
 
     def sample(*pt)

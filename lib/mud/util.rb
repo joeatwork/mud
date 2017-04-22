@@ -32,7 +32,7 @@ module Mud::Util
     end
   end
 
-  def self.offsets(dimension)
+  def self.neighborhood(dimension)
     return [[-1], [0], [1]] if dimension == 1
 
     roots = offsets(dimension - 1)

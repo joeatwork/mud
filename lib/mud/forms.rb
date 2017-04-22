@@ -9,18 +9,20 @@ require 'mud/util'
 module Mud::Forms
 
   class Noise
+    attr_reader :offset
     attr_reader :bounds
 
     def initialize(size, dimensions, probability, seed = nil)
       seed ||= Random.new_seed
       p = [probability, 1.0 - probability].min
 
+      @offset = [0] * dimensions
       @bounds = [size] * dimensions
       @invert = p < probability
       @pts = Set.new
 
       randoms = Random.new(seed)
-      Mud.enumerate_bounds(bounds).each do |pt|
+      Mud.enumerate_bounds(offset, bounds).each do |pt|
         @pts.add(pt) if randoms.rand < p
       end
     end
@@ -32,11 +34,13 @@ module Mud::Forms
 
   # Allow callers to just use some arbitrary block for samples
   class Fn
+    attr_reader :offset
     attr_reader :bounds
 
-    def initialize(bounds, &block)
+    def initialize(offset, bounds, &block)
       @fn = block
       @bounds = bounds
+      @offset = offset
     end
 
     def sample(*pt)
@@ -46,20 +50,31 @@ module Mud::Forms
 
   # A pile of explicit sample points
   class Bag
+    attr_reader :offset
     attr_reader :bounds
 
     # empty bags should provide explicit bounds
     # (remember, bounds are exclusive!)
-    def initialize(samples, bounds=nil)
+    def initialize(samples, offset = nil, bounds = nil)
+      if (bounds || offset) && !(bounds && offset)
+        raise 'Must provide both or neither of bounds and offset'
+      end
+
       @bag = Set.new samples
-      @bounds = if bounds
-                  bounds
-                else
-                  sample_bounds = @bag.reduce do |maxes, pt|
-                    maxes.zip(pt).map { |a_b| a_b.max }
-                  end
-                  sample_bounds.map { |b| b + 1 }
-                end
+      if bounds
+        @bounds, @offset = bounds, offset
+      else
+        @offset = @bag.reduce do |mins, pt|
+          mins.zip(pt).map(&:min)
+        end
+
+        maxes = @bag.reduce do |m, pt|
+          m.zip(pt).map(&:max)
+        end
+
+        maxes_plus = maxes.map { |b| b + 1 }
+        @bounds = maxes_plus.zip(@offset) { |x, off| x - off }
+      end
     end
 
     def sample(*pt)
@@ -69,9 +84,11 @@ module Mud::Forms
 
   # Saves results of potentially expensive child sources
   class Memo
+    attr_reader :offset
     attr_reader :bounds
 
     def initialize(source)
+      @offset = source.offset
       @bounds = source.bounds
 
       memo_enum = Mud.enumerate(source).map do |key|
@@ -87,32 +104,27 @@ module Mud::Forms
     end
   end
 
-  # Position source inside of some volume. Can translate or crop
+  # Expands or contracts the "canvas" around a source, protecting the source bounds.
+  # Can be used to crop or pad a form
   class Arrange
+    attr_reader :offset
     attr_reader :bounds
 
-    def initialize(source, location, bounds)
-      @source = source
-      @source_bounds = source.bounds
-      @location = location
-      @bounds = bounds
-
-      if location.length != bounds.length
-        raise(
-          RangeError,
-          "Location (#{location}) and bounds (#{bounds}) must have same dimension"
-        )
+    def initialize(source, offset, bounds)
+      if offset.length != bounds.length
+        raise(RangeError, 'offset and bounds must have same dimension')
       end
+
+      @source = source
+      @s_bounds = source.bounds
+      @s_offset = source.offset
+      @offset = offset
+      @bounds = bounds
     end
 
     def sample(*pt)
-      if pt.length != @bounds.length
-        raise RangeError.new("Form in #{@bounds.length} dimensions can't sample #{pt}")
-      end
-
-      translated = @location.zip(pt).map { |(a, b)| b - a }
-      in_bounds = translated.zip(@source_bounds).all? do |(p_x, bound_x)|
-        p_x >= 0 && p_x < bound_x
+      in_bounds = pt.zip(@s_offset, @s_bounds).all? do |(x, off, bound)|
+        x >= off && x < (off + bound)
       end
 
       in_bounds && @source.sample(*translated)
@@ -121,18 +133,22 @@ module Mud::Forms
 
   # operation on two samples
   class And
+    attr_reader :offset
     attr_reader :bounds
 
     def initialize(a, b)
-      @a = a
-      @b = b
       abound = a.bounds
       bbound = b.bounds
-      if abound != bbound
-        raise RangeError.new("Bounds #{abound} and #{bbound} must match")
-      end
+      raise(RangeError, 'Bounds must match') if abound != bbound
 
-      @bounds = abound.zip(bbound).map(&:max)
+      aoffset = a.offset
+      boffset = b.offset
+      raise(RangeError, 'Offsets must match') if aoffset != boffset
+
+      @a = a
+      @b = b
+      @offset = aoffset
+      @bounds = abound
     end
 
     def sample(*pt)
@@ -141,17 +157,23 @@ module Mud::Forms
   end
 
   class Layers
+    attr_reader :bounds
+    attr_reader :offset
+
     def initialize(ls)
       @ls = ls.to_a
-    end
 
-    def bounds
-      ret = @ls.map(&:bounds).reduce do |b, layer|
-        b.zip(layer).map { |b_l| b_l.max }
+      raise(RangeError, 'Zero layers not supported') if @ls.empty?
+
+      b0 = @ls[0].bounds
+      off0 = @ls[0].offset
+
+      unless @ls.all? { |layer| layer.bounds == b0 && layer.offset == off0 }
+        raise(ArgumentError, 'Layer bounds and offsets must match')
       end
 
-      ret << @ls.length
-      ret
+      @bounds = b0 + [@ls.length]
+      @offset = off0 + [0]
     end
 
     def sample(*pt)
@@ -162,9 +184,12 @@ module Mud::Forms
 
   class Islands
     attr_reader :bounds
+    attr_reader :offset
 
     def initialize(source, number, min_size = 1)
       @bounds = source.bounds
+      @offset = source.offset
+
       population = Mud.enumerate(source).select(&:last).map do |lis|
         lis.pop
         lis
@@ -213,12 +238,15 @@ module Mud::Forms
 
   class Filter
     attr_reader :bounds
+    attr_reader :offset
 
     # Block should take two arguments - the pt, and a "region"
     # the region is a list of offsets + [samples]
     def initialize(source, &block)
       @bounds = source.bounds
-      @offsets = Mud::Util.offsets(@bounds.length)
+      @offset = source.offset
+
+      @neighborhood = Mud::Util.neighborhood(@bounds.length)
       @source = Memo.new(source)
       @fn = block
     end
