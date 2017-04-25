@@ -1,0 +1,22 @@
+{
+  "parser": "babel-eslint",
+  "plugins": ["babel", "react"],
+  "extends": ["eslint:recommended", "plugin:react/recommended"],
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "ecmaFeatures": {
+    "jsx": true
+  },
+
+  "rules": {
+    "semi": ["error", "always"],
+    "eqeqeq": ["error", "always"],
+    "comma-dangle": ["error", "always-multiline"],
+    "quotes": ["error", "single", {"avoidEscape": true, "allowTemplateLiterals": true}],
+    "quote-props": ["error", "as-needed"],
+
+    "react/display-name": 0 // Allow for pure function components
+  }
+}
