@@ -2,7 +2,10 @@
   "name": "mud",
   "version": "1.0.0",
   "description": "Let the computer do it for me",
-  "scripts": {},
+  "scripts": {
+    "dev": "webpack -d --watch",
+    "build" : "webpack -p"
+  },
   "author": "joeatwork",
   "license": "Apache-2.0",
   "dependencies": {
@@ -10,6 +13,8 @@
     "babel-loader": "^7.0.0",
     "babel-preset-es2017": "^6.24.1",
     "babel-preset-react": "^6.24.1",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
     "webpack": "^2.4.1"
   }
 }
