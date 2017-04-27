@@ -8,6 +8,7 @@ require 'mud/util'
 # Two-dimensional bodies of samples
 module Mud::Forms
 
+  # Random pixelated noise
   class Noise
     attr_reader :offset
     attr_reader :bounds
@@ -64,8 +65,8 @@ module Mud::Forms
       if bounds
         @bounds, @offset = bounds, offset
       else
-        @offset = @bag.reduce do |mins, pt|
-          mins.zip(pt).map(&:min)
+        @offset = @bag.reduce do |m, pt|
+          m.zip(pt).map(&:min)
         end
 
         maxes = @bag.reduce do |m, pt|
@@ -73,7 +74,8 @@ module Mud::Forms
         end
 
         maxes_plus = maxes.map { |b| b + 1 }
-        @bounds = maxes_plus.zip(@offset) { |x, off| x - off }
+
+        @bounds = maxes_plus.zip(@offset).map { |x, off| x - off }
       end
     end
 

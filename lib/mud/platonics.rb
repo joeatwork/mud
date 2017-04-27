@@ -2,8 +2,10 @@
 
 require 'matrix'
 
+# Continuous isosurfaces with cool transformations
 module Mud::Platonics
 
+  # Tags a form as continuous, so we can apply transforms to them
   module Continuous
     def continuous
       true
@@ -106,7 +108,10 @@ module Mud::Platonics
   end
 
   def self.rotate2d(source, theta)
-    raise "Only supported in two dimensions" unless source.bounds.length == 2
+    unless source.bounds.length == 2
+      raise(RangeError, 'Only supported in two dimensions')
+    end
+
     cos_theta = Math.cos(theta)
     sin_theta = Math.sin(theta)
     m = Matrix[

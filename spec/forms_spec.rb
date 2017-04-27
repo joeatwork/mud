@@ -1,9 +1,43 @@
 require 'spec_helper'
 
 RSpec.describe Mud::Forms do
+
+  describe 'basics' do
+    let(:bag) { Mud::Forms::Bag.new([[0, 0], [2, 2]]) }
+    let(:bag2) { Mud::Forms::Bag.new([1,1], [0, 0], [3, 3]) }
+    let(:noise) { Mud::Forms::Noise.new(3, 2, 0.5) }
+    let(:fn) do
+      Mud::Forms::Fn.new([0, 0], [3, 3]) { true }
+    end
+    let(:memo) { Mud::Forms::Memo.new(bag) }
+    let(:arrange) { Mud::Forms::Arrange.new(bag, [0, 0], [3, 3]) }
+    let(:conjunction) { Mud::Forms::And.new(bag, bag2) }
+    let(:layers) do
+      b0 = Mud::Forms::Bag.new([[0], [2]])
+      b1 = Mud::Forms::Bag.new([[0], [2]])
+      b2 = Mud::Forms::Bag.new([[0], [2]])
+      Mud::Forms::Layers.new([b0, b1, b2])
+    end
+    let(:flavors) do
+      [bag, noise, fn, arrange, conjunction, layers] # memo?
+    end
+
+    it 'should provide bounds in all cases' do
+      flavors.each do |form|
+        expect(form.bounds).to eq([3, 3]), "Bounds problem with #{form.bounds} #{form.class.name}"
+      end
+    end
+
+    it 'should provide offsets in all cases' do
+      flavors.each do |form|
+        expect(form.offset).to eq([0, 0]), "Offset problem with #{form.offset} #{form.class.name}"
+      end
+    end
+  end
+
   describe Mud::Forms::Fn do
     let(:fn) do
-      Mud::Forms::Fn.new([2, 2]) do |row, col|
+      Mud::Forms::Fn.new([0, 0], [2, 2]) do |row, col|
         row == col
       end
     end

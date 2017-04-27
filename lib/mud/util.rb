@@ -35,7 +35,7 @@ module Mud::Util
   def self.neighborhood(dimension)
     return [[-1], [0], [1]] if dimension == 1
 
-    roots = offsets(dimension - 1)
+    roots = neighborhood(dimension - 1)
     roots.flat_map do |root|
       [root + [-1], root + [0], root + [1]]
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Mud::Filters do
@@ -12,7 +14,7 @@ RSpec.describe Mud::Filters do
 
   describe 'smooth' do
     let(:center) do
-      Mud::Forms::Fn.new([3, 3]) do |row, col|
+      Mud::Forms::Fn.new([0, 0], [3, 3]) do |row, col|
         row == 1 && col == 1
       end
     end
@@ -46,7 +48,7 @@ RSpec.describe Mud::Filters do
 
   describe 'converge' do
     let(:centered) do
-      Mud::Forms::Fn.new([6, 6]) do |row, col|
+      Mud::Forms::Fn.new([0, 0], [6, 6]) do |row, col|
         row > 0 && row < 5 && col > 0 && col < 5
       end
     end
