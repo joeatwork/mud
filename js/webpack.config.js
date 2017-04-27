@@ -7,9 +7,10 @@ module.exports = {
   entry: path.resolve(__dirname, 'src/index.jsx'),
   output: {
     path: path.resolve(__dirname, 'public/build'),
+    publicPath: '/build/', // For webpack-dev-server
     filename: 'bundle.js',
   },
-   module : {
+  module : {
     loaders : [
       {
         test : /\.jsx?/,

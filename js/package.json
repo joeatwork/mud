@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Let the computer do it for me",
   "scripts": {
-    "dev": "webpack -d --watch",
-    "build" : "webpack -p"
+    "dev": "webpack-dev-server --content-base public/",
+    "build": "webpack -p"
   },
   "author": "joeatwork",
   "license": "Apache-2.0",
@@ -16,5 +16,8 @@
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "webpack": "^2.4.1"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^2.4.5"
   }
 }

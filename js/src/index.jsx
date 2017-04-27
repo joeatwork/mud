@@ -7,4 +7,3 @@ const Root = () => {
 };
 
 ReactDom.render(<Root />, document.getElementById('root'));
-
