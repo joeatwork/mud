@@ -1,7 +1,7 @@
-const {forms} = require('../src/mud'); // TODO import {forms} from 'mud';
+import mud from '../src/mud';
 
 describe('mud.forms', () => {
-  const unitBox = forms.box(1, 1, 1);
+  const unitBox = mud.forms.box(1, 1, 1);
 
   it('should be centered on the origin', () => {
     expect(unitBox.bounds.pos).toEqual([-1, -1, -1]);
