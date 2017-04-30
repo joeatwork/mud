@@ -13,9 +13,9 @@
 //
 export default {
   box: (width, height, depth) => {
-    const halfW = width / 2;
-    const halfH = height / 2;
-    const halfD = depth / 2;
+    const halfW = width / 2.0;
+    const halfH = height / 2.0;
+    const halfD = depth / 2.0;
 
     return {
       bounds: {
