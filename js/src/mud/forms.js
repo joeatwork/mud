@@ -6,8 +6,8 @@
 //
 //   - a BOUNDING BOX, {pos, size} such that all samples outside of or on the boundary
 //         of the bounding box will be false
-//       - pos is a position [x, y, z]
-//       - size is a non-negative offset from position, [dx, dy, dz]
+//       - pos is an integer position [x, y, z]
+//       - size is a non-negative integer offset from position, [dx, dy, dz]
 //
 // NOTE - sample should successfully return false if given pos or pos + size
 //
@@ -19,8 +19,8 @@ export default {
 
     return {
       bounds: {
-        pos: [-(halfW + 1), -(halfH + 1), -(halfhD + 1)],
-        size: [width + 2, height + 2, depth + 2],
+        pos: [-(halfW + 1), -(halfH + 1), -(halfhD + 1)].map(Math.floor),
+        size: [width + 2, height + 2, depth + 2].map(Math.ceil),
       },
       sample: (x, y, z) => {
         if (x < -halfW || y < -halfH || z < -halfD) {
@@ -42,8 +42,8 @@ export default {
     const squared = radius * radius;
     return {
       bounds: {
-        pos: [lowbound, lowbound, lowbound],
-        size: [highbound, highbound, highbound],
+        pos: [lowbound, lowbound, lowbound].map(Math.floor),
+        size: [highbound, highbound, highbound].map(Math.ceil),
       },
       sample: (x, y, z) => {
         const hypSquared = (x * x) + (y * y) + (z * z);
