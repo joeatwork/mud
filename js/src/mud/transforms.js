@@ -1,9 +1,9 @@
 
-const vecZip => (v1, v2, f) => {
+const vecZip = (v1, v2, f) => {
   return v1.map((_, i) => f(v1[i], v2[i]));
 };
 
-const vecPlus => (v1, v2) => {
+const vecPlus = (v1, v2) => {
   return vecZip(v1, v2, (a, b) => a + b);
 };
 
@@ -36,7 +36,7 @@ const boundsIntersection = (b1, b2) => {
 // We don't guarantee that forms won't throw exceptions
 // or act goofily outside of their bounds, so this isn't
 // just an optimization.
-const boundedSample = (form) {
+const boundedSample = (form) => {
   const {bounds, sample} = form;
 
   const [minX, minY, minZ] = bounds.pos;
@@ -83,7 +83,7 @@ export default {
       bounds: boundsIntersection(form1.bounds, form2.bounds),
       sample: (x, y, z) => s1(x, y, z) && s2(x, y, z),
     }
-  }
+  },
 
   subtract: (form1, form2) => {
     const s1 = form1.sample;
@@ -93,5 +93,5 @@ export default {
       bounds: form1.bounds,
       sample: (x, y, z) => s1(x, y, z) && !s2(x, y, z),
     }
-  }
+  },
 }

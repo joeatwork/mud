@@ -4,7 +4,11 @@
   "description": "Let the computer do it for me",
   "scripts": {
     "dev": "webpack-dev-server --content-base public/",
-    "build": "webpack -p"
+    "build": "webpack",
+    "test": "jest"
+  },
+  "babel": {
+    "presets": ["es2017", "react"]
   },
   "author": "joeatwork",
   "license": "Apache-2.0",
@@ -18,6 +22,8 @@
     "webpack": "^2.4.1"
   },
   "devDependencies": {
+    "babel-jest": "^19.0.0",
+    "jest": "^19.0.2",
     "webpack-dev-server": "^2.4.5"
   }
 }

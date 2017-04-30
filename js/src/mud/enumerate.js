@@ -1,5 +1,5 @@
 // f(x, y, z) for all integer x, y, z inside of bounds, inclusive
-const forEachInBounds => ({pos, size}, opts, f) => {
+const forEachInBounds = ({pos, size}, opts, f) => {
   if ('undefined' === typeof f) {
     f = opts;
     opts = {plane: false};
@@ -26,7 +26,7 @@ const forEachInBounds => ({pos, size}, opts, f) => {
 };
 
 // f(x, y, z, sample) for each integer x, y, z inside of bounds
-const forEachSample => (form, opts, f) => {
+const forEachSample = (form, opts, f) => {
   if ('undefined' === typeof f) {
     f = opts;
     opts = {plane: false};
@@ -37,7 +37,7 @@ const forEachSample => (form, opts, f) => {
 
 // An integer resolution memo of a form. Notice you can't
 // rotate, skew or scale a memo since it's only defined on integer points.
-const memo(form, opts) => {
+const memo = (form, opts) => {
   if ('undefined' === opts) {
     opts = {plane: false};
   }
