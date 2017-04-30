@@ -12,6 +12,7 @@
 // NOTE - sample should successfully return false if given pos or pos + size
 //
 export default {
+  // width, height, depth must be non-negative
   box: (width, height, depth) => {
     const halfW = width / 2.0;
     const halfH = height / 2.0;
@@ -36,6 +37,7 @@ export default {
     };
   },
 
+  // radius must be non-negative
   sphere: (radius) => {
     const lowbound = -(radius + 1);
     const highbound = (radius * 2) + 2;
