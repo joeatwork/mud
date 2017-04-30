@@ -4,11 +4,14 @@
   "description": "Let the computer do it for me",
   "scripts": {
     "dev": "webpack-dev-server --content-base public/",
-    "build": "webpack",
+    "build": "webpack -p",
     "test": "jest"
   },
   "babel": {
-    "presets": ["es2017", "react"]
+    "presets": [
+      "es2017",
+      "react"
+    ]
   },
   "author": "joeatwork",
   "license": "Apache-2.0",
@@ -22,7 +25,12 @@
     "webpack": "^2.4.1"
   },
   "devDependencies": {
+    "babel-eslint": "^7.2.3",
     "babel-jest": "^19.0.0",
+    "eslint": "^3.19.0",
+    "eslint-plugin-babel": "^4.1.1",
+    "eslint-plugin-jest": "^19.0.1",
+    "eslint-plugin-react": "^6.10.3",
     "jest": "^19.0.2",
     "webpack-dev-server": "^2.4.5"
   }

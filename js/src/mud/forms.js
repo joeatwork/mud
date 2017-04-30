@@ -19,7 +19,7 @@ export default {
 
     return {
       bounds: {
-        pos: [-(halfW + 1), -(halfH + 1), -(halfhD + 1)].map(Math.floor),
+        pos: [-(halfW + 1), -(halfH + 1), -(halfD + 1)].map(Math.floor),
         size: [width + 2, height + 2, depth + 2].map(Math.ceil),
       },
       sample: (x, y, z) => {
@@ -33,7 +33,7 @@ export default {
 
         return true;
       },
-    }
+    };
   },
 
   sphere: (radius) => {
@@ -49,6 +49,6 @@ export default {
         const hypSquared = (x * x) + (y * y) + (z * z);
         return squared >= hypSquared;
       },
-    }
+    };
   },
-}
+};

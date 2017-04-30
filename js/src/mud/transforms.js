@@ -53,20 +53,19 @@ const boundedSample = (form) => {
 
     return sample(x, y, z);
   };
-}
+};
 
 export default {
   translate: (form, x, y, z) => {
-    const {sample, bounds} = form
-    const {pos, size} = bounds
-    const vec = [x, y, z];
+    const {sample, bounds} = form;
+    const {pos, size} = bounds;
     return {
       bounds: {
-        pos: vecPlus(pos, vec),
+        pos: vecPlus(pos, [x, y, z]),
         size: size,
       },
-      sample: (x, y, z) => sample(x - ox, y - oy, z - ox),
-    }
+      sample: (sx, sy, sz) => sample(sx - x, sy - y, sz - x),
+    };
   },
 
   union: (form1, form2) => {
@@ -74,7 +73,7 @@ export default {
     return {
       bounds: boundsUnion(form1.bounds, form2.bounds),
       sample: (x, y, z) => s1(x, y, z) || s2(x, y, z),
-    }
+    };
   },
 
   intersect: (form1, form2) => {
@@ -82,7 +81,7 @@ export default {
     return {
       bounds: boundsIntersection(form1.bounds, form2.bounds),
       sample: (x, y, z) => s1(x, y, z) && s2(x, y, z),
-    }
+    };
   },
 
   subtract: (form1, form2) => {
@@ -92,6 +91,6 @@ export default {
     return {
       bounds: form1.bounds,
       sample: (x, y, z) => s1(x, y, z) && !s2(x, y, z),
-    }
+    };
   },
-}
+};

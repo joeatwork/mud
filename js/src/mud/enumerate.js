@@ -7,13 +7,13 @@ const forEachInBounds = ({pos, size}, opts, f) => {
 
   const [basex, basey, basez] = pos.map(Math.ceil);
   const [sizex, sizey, sizez] = size.map(Math.floor);
-  const {plane} = opts
+  const {plane} = opts;
 
   for (let xoff = 0; xoff <= sizex; xoff++) {
     const x = xoff + basex;
     for (let yoff = 0; yoff <= sizey; yoff++) {
       const y = yoff + basey;
-      if (opts.plane) {
+      if (plane) {
         f(x, y, 0);
       } else {
         for (let zoff = 0; zoff <= sizez; zoff++) {
@@ -32,17 +32,16 @@ const forEachSample = (form, opts, f) => {
     opts = {plane: false};
   }
 
-  forEachInBounds(form.bounds, opts, (x, y, z) => f(x, y, z, s));
+  forEachInBounds(form.bounds, opts, (x, y, z) => {
+    const s = form.sample(x, y, z);
+    f(x, y, z, s);
+  });
 };
 
 // An integer resolution memo of a form. Notice you can't
 // rotate, skew or scale a memo since it's only defined on integer points.
-const memo = (form, opts) => {
-  if ('undefined' === opts) {
-    opts = {plane: false};
-  }
-
-  const {plane} = opts;
+const memo = (form) => {
+  const {pos, size} = form;
   const [basex, basey, basez] = pos;
   const [sizex, sizey, sizez] = size.map(x => x + 1); // size is INCLUSIVE
 
@@ -50,17 +49,24 @@ const memo = (form, opts) => {
   const ystride = sizex;
   const zstride = sizex * sizey;
 
-  forEachSample(form, opts, (x, y, z, s) => {
-    const ix = x + (ystride * y) + (zstride * z);
-    result[ix] = s | 0;
+  const ix = (x, y, z) => {
+    const xoff = x - basex;
+    const yoff = y - basey;
+    const zoff = z - basez;
+    return xoff + (ystride * yoff) + (zstride * zoff);
+  };
+
+  forEachSample(form, {}, (x, y, z, s) => {
+    const i = ix(x, y, z);
+    result[i] = s | 0;
   });
 
   return {
     bounds: form.bounds,
     sample: (x, y, z) => {
-      const ix = x + (ystride * y) + (zstride * z);
-      return result[ix];
-    }
+      const i = ix(x, y, z);
+      return result[i];
+    },
   };
 };
 
