@@ -64,7 +64,7 @@ export default {
         pos: vecPlus(pos, [x, y, z]),
         size: size,
       },
-      sample: (sx, sy, sz) => sample(sx - x, sy - y, sz - x),
+      sample: (sx, sy, sz) => sample(sx - x, sy - y, sz - z),
     };
   },
 
