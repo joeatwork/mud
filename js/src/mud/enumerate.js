@@ -1,12 +1,13 @@
+import {intBounds} from './bounds';
+
 // f(x, y, z) for all integer x, y, z inside of bounds, inclusive
-const forEachInBounds = ({pos, size}, opts, f) => {
+const forEachInBounds = (bounds, opts, f) => {
   if ('undefined' === typeof f) {
     f = opts;
     opts = {plane: false};
   }
 
-  const [basex, basey, basez] = pos.map(Math.ceil);
-  const [sizex, sizey, sizez] = size.map(Math.floor);
+  const {pos: [basex, basey, basez], size: [sizex, sizey, sizez]} = intBounds(bounds);
   const {plane} = opts;
 
   for (let xoff = 0; xoff <= sizex; xoff++) {
@@ -40,12 +41,16 @@ const forEachSample = (form, opts, f) => {
 
 // An integer resolution memo of a form. Notice you can't
 // rotate, skew or scale a memo since it's only defined on integer points.
+//
+// the buffer on a memo is public, and guaranteed to store a dense
+// collection of samples as 1 or 0, where
+// buffer[x * xstride + y * ystride + z * zstride]
 const memo = (form) => {
   const {pos, size} = form;
   const [basex, basey, basez] = pos;
   const [sizex, sizey, sizez] = size.map(x => x + 1); // size is INCLUSIVE
 
-  const result = new Uint8Array(sizex * sizey * sizez);
+  const buffer = new Uint8Array(sizex * sizey * sizez);
   const ystride = sizex;
   const zstride = sizex * sizey;
 
@@ -58,14 +63,18 @@ const memo = (form) => {
 
   forEachSample(form, {}, (x, y, z, s) => {
     const i = ix(x, y, z);
-    result[i] = s | 0;
+    buffer[i] = s | 0;
   });
 
   return {
+    buffer: buffer,
+    xstride: 1,
+    ystride: ystride,
+    zstride: zstride,
     bounds: form.bounds,
     sample: (x, y, z) => {
       const i = ix(x, y, z);
-      return result[i];
+      return buffer[i];
     },
   };
 };

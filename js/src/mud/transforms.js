@@ -1,11 +1,5 @@
-
-const vecZip = (v1, v2, f) => {
-  return v1.map((_, i) => f(v1[i], v2[i]));
-};
-
-const vecPlus = (v1, v2) => {
-  return vecZip(v1, v2, (a, b) => a + b);
-};
+import utils from './utils';
+const {vecZip, vecPlus, vecMinus} = utils;
 
 const boundsUnion = (b1, b2) => {
   const top1 = vecPlus(b1.pos, b1.size);
@@ -16,7 +10,7 @@ const boundsUnion = (b1, b2) => {
 
   return {
     pos: minPos,
-    size: vecZip(maxTop, minPos, (t, p) => t - p),
+    size: vecMinus(maxTop, minPos),
   };
 };
 
@@ -29,7 +23,7 @@ const boundsIntersection = (b1, b2) => {
 
   return {
     pos: maxPos,
-    size: vecZip(minTops, maxPos, (t, p) => t - p),
+    size: vecMinus(minTops, maxPos),
   };
 };
 
