@@ -78,11 +78,15 @@
     </script>
     <script>
       var scene = new THREE.Scene();
+      scene.add( new THREE.AmbientLight( 0x444444 ) );
+      directionalLight = new THREE.DirectionalLight();
+      scene.add(directionalLight);
+
       var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+      camera.position.z = 2 * radius;
 
       var renderer = new THREE.WebGLRenderer();
       renderer.setSize( window.innerWidth, window.innerHeight );
-      document.body.appendChild( renderer.domElement );
 
       var geometry = new THREE.Geometry();
       triangles.forEach(t => {
@@ -97,15 +101,11 @@
 
      // Total cargo-cult setup of lighting and material
      var material = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: 0.5, shininess: 0 } );
-     // var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
      var mud = new THREE.Mesh( geometry, material );
      scene.add(mud);
 
-     scene.add( new THREE.AmbientLight( 0x444444 ) );
-     directionalLight = new THREE.DirectionalLight();
-     scene.add(directionalLight);
 
-     camera.position.z = 2 * radius;
+      document.body.appendChild( renderer.domElement );
 
      var render = function () {
        requestAnimationFrame( render );
