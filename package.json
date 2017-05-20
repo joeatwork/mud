@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "webpack-dev-server --content-base public/",
     "build": "webpack -p",
-    "test": "jest"
+    "test": "jest",
+    "watch-test": "jest --watch"
   },
   "babel": {
     "presets": [
@@ -23,6 +24,7 @@
     "babel-preset-react": "^6.24.1",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
+    "three": "^0.85.2",
     "webpack": "^2.4.1"
   },
   "devDependencies": {
