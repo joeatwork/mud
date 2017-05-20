@@ -1,6 +1,10 @@
-import {intBounds} from './bounds';
-import {forEachInBounds} from './enumerate';
-import {vecZip, vecPlus, vecMinus} from './utils';
+import bounds from './bounds';
+import enumerate from './enumerate';
+import utils from './utils';
+
+const {intBounds} = bounds;
+const {forEachInBounds} = enumerate;
+const {vecZip, vecPlus, vecMinus} = utils;
 
 // Tables and approach from http://paulbourke.net/geometry/polygonise/
 
@@ -19,7 +23,7 @@ const CUBE_VERTEXES = [
   [0, 1, 1], // 0x80
 ];
 
-// Edges from vertex to vertex in CUBE_VERTEXES
+// Edges are from vertex to vertex in CUBE_VERTEXES
 const CUBE_EDGES = [
   [0, 1],
   [1, 2],
@@ -35,7 +39,7 @@ const CUBE_EDGES = [
   [1, 5],
   [2, 6],
   [3, 7],
-];
+].map(([base, extent]) => [CUBE_VERTEXES[base], CUBE_VERTEXES[extent]]);
 
 // Floating point offsets from vertex 0 for midpoint of each edge
 const CUBE_EDGE_OFFSETS = CUBE_EDGES.map(([base, extent]) => {
@@ -316,14 +320,16 @@ const VERTEXES_TO_OFFSET_TRIANGLES = VERTEXES_TO_EDGE_TRIANGLES.map(lis => {
 // produces a list of triangles. Assumes samples are in CUBE_VERTEXES order
 const trianglesFromSamples = (offset, samples) => {
   let mask = 0;
-  samples.each((inside, ix) => {
+  samples.forEach((inside, ix) => {
     if (inside) {
       mask = mask | (1 << ix);
     }
   });
 
   const triangles = VERTEXES_TO_OFFSET_TRIANGLES[mask];
-  return triangles.map(t => vecPlus(t, offset));
+  return triangles.map(tri => {
+    return tri.map(pt => vecPlus(pt, offset));
+  });
 };
 
 // f([[x, y, z], [x, y, z] ...]) for each integer-aligned unit cube
@@ -340,10 +346,11 @@ const forEachCube = (bounds, opts, f) => {
 
   forEachInBounds(bounds, opts, (...low) => {
     const high = vecPlus(low, unit);
-    const legal = vecZip(high, maxEdge).all((x, maxx) => x <= maxx);
+    const legal = vecZip(high, maxEdge).every(([x, maxx]) => x <= maxx);
+
     if (legal) {
-      const cube = CUBE_VERTEXES.map((isHigh, ix) => {
-        return isHigh ? high[ix] : low[ix];
+      const cube = CUBE_VERTEXES.map(vertex => {
+        return vertex.map((isHigh, ix) => isHigh ? high[ix] : low[ix]);
       });
       f(cube);
     }

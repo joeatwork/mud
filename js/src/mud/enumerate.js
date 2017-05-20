@@ -1,4 +1,5 @@
-import {intBounds} from './bounds';
+import bounds from './bounds';
+const {intBounds} = bounds;
 
 // f(x, y, z) for all integer x, y, z inside of bounds, inclusive
 const forEachInBounds = (bounds, opts, f) => {

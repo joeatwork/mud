@@ -17,6 +17,7 @@
     "comma-dangle": ["error", "always-multiline"],
     "quotes": ["error", "single", {"avoidEscape": true, "allowTemplateLiterals": true}],
     "quote-props": ["error", "as-needed"],
+    "no-unused-vars": ["error", {"args": "all", "argsIgnorePattern": "^_"}],
 
     "react/display-name": 0 // Allow for pure function components
   }
