@@ -1,32 +1,20 @@
 # Mud
 
-Some drawings and pictures and things.
+Some drawings and pictures and things, in your browser
 
-## Installation
+## Getting Started
 
-Add this line to your application's Gemfile:
+Mud requires node+npm for managing dependencies and building
 
-```ruby
-gem 'mud'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install mud
+    $ npm install # installs dependencies and tooling
 
 ## Development/Usage
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Use "npm run dev" to run a webpack development server
 
-Running 'bin/demo' will produce some sort of demo to stdout - an image or some other sort of file.
+    $ npm run dev
 
-Here's the current demo:
-
-![a demo image probably](/demo/demo.png)
+While the dev server is running, you'll be able to see your work, updated as you save things, at http://localhost:8080/webpack-dev-server/
 
 ## Contributing
 
