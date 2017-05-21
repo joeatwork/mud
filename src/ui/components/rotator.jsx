@@ -17,16 +17,35 @@ export default connect(
         return {onUpdate};
     }
 )(({rotation, onUpdate}) => {
-    const rotX = rotation.get(0);
-    const rotY = rotation.get(1);
+    const maxResolution = 100;
+    const slideX = rotation.get(0) * (maxResolution / (Math.PI * 2));
+    const slideY = rotation.get(1) * (maxResolution / (Math.PI * 2));
 
-    const updateX = evt => onUpdate(rotation.set(0, evt.target.value));
-    const updateY = evt => onUpdate(rotation.set(1, evt.target.value));
+    const change = (ix, evt) => {
+        const v = parseInt(evt.target.value, 10);
+        const radians = v * ((Math.PI * 2) / maxResolution);
+        onUpdate(rotation.set(ix, radians));
+    };
+
+    const updateX = evt => change(0, evt);
+    const updateY = evt => change(1, evt);
 
     return (
         <div>
-          <label>Rotate X <input type="range" value={rotX} onChange={updateX} /></label>
-          <label>Rotate Y <input type="range" value={rotY} onChange={updateY} /></label>
+          <div>
+            <label>
+              Rotate X
+              <input type="range" min="0"
+                     max={maxResolution} value={slideX} onChange={updateX} />
+            </label>
+          </div>
+          <div>
+            <label>
+              Rotate Y
+              <input type="range" min="0"
+                     max={maxResolution} value={slideY} onChange={updateY} />
+            </label>
+          </div>
         </div>
     );
 });
