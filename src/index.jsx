@@ -17,7 +17,7 @@ const {sphere} = forms;
 const {marchingCubes} = mesh;
 
 const store = createStore(reducer);
-const radius = 10.0;
+const radius = 20.0;
 const form = sphere(radius);
 const triangles = marchingCubes(form);
 

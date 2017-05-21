@@ -369,7 +369,13 @@ const marchingCubes = ({bounds, sample}) => {
     retChunks.push(chunk);
   });
 
-  return [].concat(...retChunks);
+  // We can't spell this as [].concat(...retChunks) because
+  // the stack can't handle the number of retChunks we've got.
+  let ret = [];
+  retChunks.forEach(chunk => {
+    ret = ret.concat(chunk);
+  });
+  return ret;
 };
 
 export default {marchingCubes};

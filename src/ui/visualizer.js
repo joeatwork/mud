@@ -56,7 +56,6 @@ export default class {
 
   animate() {
     const {renderer, scene, camera} = this;
-
     renderer.render(scene, camera);
   }
 }
